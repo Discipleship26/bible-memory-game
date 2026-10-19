@@ -20,6 +20,7 @@
             transition: background-image 0.6s ease-in-out;
         }
 
+        /* 確保背景圖片在半透明遮罩下方，讓玩家清晰看見背景圖又維持文字可讀性 */
         body::before {
             content: '';
             position: fixed;
@@ -34,6 +35,7 @@
             font-family: 'Press Start 2P', cursive, 'Noto Sans TC', sans-serif;
         }
 
+        /* 經典 8-Bit / 16-Bit 像素陰影邊框 */
         .pixel-card {
             background-color: rgba(26, 28, 46, 0.92);
             border: 4px solid #facc15;
@@ -47,6 +49,16 @@
             backdrop-filter: blur(8px);
         }
 
+        .pixel-box {
+            border: 3px solid #334155;
+            box-shadow: 
+                -3px 0 0 0 #000,
+                3px 0 0 0 #000,
+                0 -3px 0 0 #000,
+                0 3px 0 0 #000;
+        }
+
+        /* 像素風格按鈕 */
         .pixel-btn {
             position: relative;
             display: inline-block;
@@ -92,6 +104,7 @@
             border-color: #a7f3d0;
         }
 
+        /* 閃爍動畫 */
         .pixel-blink {
             animation: blinker 1s cubic-bezier(1, 0, 0, 1) infinite;
         }
@@ -99,6 +112,7 @@
             50% { opacity: 0; }
         }
 
+        /* 像素復古輸入框 */
         .pixel-input {
             background-color: #0f172a;
             color: #facc15;
@@ -110,6 +124,7 @@
             outline: none;
         }
 
+        /* 自訂滾動條 */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -118,6 +133,7 @@
         }
         ::-webkit-scrollbar-thumb {
             background: #475569;
+            border-radius: 0px;
         }
         ::-webkit-scrollbar-thumb:hover {
             background: #facc15;
@@ -176,6 +192,7 @@
             `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect width="800" height="600" fill="%23062038"/><path d="M0,0 L800,600 M800,0 L0,600" stroke="%230284c7" stroke-width="2" opacity="0.2"/><circle cx="400" cy="300" r="250" fill="%2338bdf8" opacity="0.1"/><path d="M0,500 L800,400 L800,600 L0,600 Z" fill="%230f172a"/></svg>`
         ];
 
+        // 隨機切換背景圖片函式
         function setRandomBackground() {
             const randomIndex = Math.floor(Math.random() * backgroundImages.length);
             const candidates = backgroundImages[randomIndex];
@@ -186,6 +203,7 @@
                     document.body.style.backgroundImage = `url("${fallbackSvg}")`;
                     return;
                 }
+
                 const imgPath = candidates[index];
                 const img = new Image();
                 img.onload = function() {
@@ -196,11 +214,12 @@
                 };
                 img.src = imgPath;
             }
+
             tryLoadImage(0);
         }
 
         let versesData = [
-            { id: "A1", title: "得救的確據", reference: "約翰一書5:11-12", verse: "神賜給我們永生，這永生就在祂兒子裡面。有了神的兒子就有生命；沒有神的兒子就沒有生命。" },
+            { id: "A1", title: "得救的確據", reference: "約翰一書5:11-12", verse: "這見證就是神賜給我們永生，這永生也是在他兒子裏面，人有了神的兒子就有生命；沒有神的兒子就沒有生命。" },
             { id: "A2", title: "禱告蒙允的確據", reference: "約翰福音16:24", verse: "向來你們沒有奉我的名求什麼，如今你們求，就必得著，叫你們的喜樂可以滿足。" },
             { id: "A3", title: "得勝的確據", reference: "哥林多前書10:13", verse: "你們所遇見的試探，無非是人所能受的。神是信實的，必不叫你們受試探過於所能受的；在受試探的時候，總要給你們開一條出路，叫你們能忍受得住。" },
             { id: "A4", title: "赦罪的確據", reference: "約翰一書1:9", verse: "我們若認自己的罪，神是信實的，是公義的，必要赦免我們的罪，洗淨我們一切的不義。" },
@@ -224,7 +243,7 @@
             { id: "E2", title: "門徒生活_捨己", reference: "路加福音9:23", verse: "耶穌又對眾人說：「若有人要跟從我，就當捨己，天天背起他的十字架來跟從我。」" },
             { id: "E3", title: "門徒生活_服侍", reference: "馬可福音10:45", verse: "因為人子來，並不是要受人的服事，乃是要服事人，並且要捨命，作多人的贖價。" },
             { id: "E4", title: "門徒生活_分享", reference: "路加福音6:38", verse: "你們要給人，就必有給你們的，並且用十足的升斗，連搖帶按，上尖下流地倒在你們懷裡；因為你們用什麼量器量給人，也必用什麼量器量給你們。" },
-            { id: "E5", title: "門徒生活_訓練門徒", reference: "馬太福音28:18-20", verse: "耶穌進前來，對他們說：「天上地下所有的權柄都賜給我了。所以，你們要去，使萬民作我的門徒，奉父,子、聖靈的名給他們施洗。凡我所吩咐你們的，都教訓他們遵守，我就常與你們同在，直到世界的末了。」" },
+            { id: "E5", title: "門徒生活_訓練門徒", reference: "馬太福音28:18-20", verse: "耶穌進前來，對他們說：「天上地下所有的權柄都賜給我了。所以，你們要去，使萬民作我的門徒，奉父、子、聖靈的名給他們施洗。凡我所吩咐你們的，都教訓他們遵守，我就常與你們同在，直到世界的末了。」" },
             { id: "F1", title: "神的資源_神的同在", reference: "希伯來書13:5b-6", verse: "因為主曾說：「我總不撇下你，也不丟棄你。」所以我們可以放膽說：「主是幫助我的，我必不懼怕，人能把我怎麼樣呢？」" },
             { id: "F2", title: "神的資源_神的話", reference: "詩篇119:9,11", verse: "少年人用什麼潔淨他的行為呢？是要遵行你的話。我將你的話藏在心裡，免得我得罪你。" },
             { id: "F3", title: "神的資源_神的平安", reference: "以賽亞書26:3", verse: "堅心倚賴你的，你必保守他十分平安，因為他倚靠你。" },
@@ -257,8 +276,7 @@
                 { name: "保羅 Paul", score: 40, mode: "sequential" },
                 { name: "彼得 Peter", score: 38, mode: "random" },
                 { name: "提摩太 Timothy", score: 35, mode: "custom" }
-            ],
-            isLoadingLeaderboard: false
+            ]
         };
 
         function escapeHtml(str) {
@@ -286,61 +304,6 @@
         function defaultCloseModal() {
             document.getElementById('custom-modal').classList.remove('flex');
             document.getElementById('custom-modal').classList.add('hidden');
-        }
-
-        // 從 Google Apps Script 獲取雲端排行榜
-        window.fetchCloudLeaderboard = function() {
-            if (typeof google === 'undefined' || !google.script || !google.script.run) {
-                return; // 若非GAS內嵌環境則維持本地預設
-            }
-            gameState.isLoadingLeaderboard = true;
-            google.script.run
-                .withSuccessHandler(function(data) {
-                    if (data && Array.isArray(data) && data.length > 0) {
-                        gameState.leaderboardData = data;
-                    }
-                    gameState.isLoadingLeaderboard = false;
-                    const lbContainer = document.getElementById('leaderboard-container');
-                    if (lbContainer) {
-                        lbContainer.innerHTML = renderLeaderboardHtml();
-                    }
-                })
-                .withFailureHandler(function(err) {
-                    gameState.isLoadingLeaderboard = false;
-                    console.error("無法載入雲端排行榜: ", err);
-                })
-                .getLeaderboard();
-        };
-
-        // 上傳分數至 Google 試算表
-        window.uploadScoreToCloud = function(name, score, mode) {
-            if (typeof google === 'undefined' || !google.script || !google.script.run) {
-                return;
-            }
-            google.script.run
-                .withSuccessHandler(function(res) {
-                    console.log(res.message);
-                })
-                .withFailureHandler(function(err) {
-                    console.error("上傳分數失敗: ", err);
-                })
-                .saveScoreToSheet(name, score, mode);
-        };
-
-        function renderLeaderboardHtml() {
-            if (gameState.isLoadingLeaderboard) {
-                return '<p class="text-xs text-amber-300 font-bold text-center py-2 pixel-blink">[ 正在從雲端載入天梯榜... ]</p>';
-            }
-            return gameState.leaderboardData.slice(0, 5).map((item, idx) => {
-                let modeText = '循序';
-                if (item.mode === 'random') modeText = '大亂鬥';
-                else if (item.mode === 'custom') modeText = '自訂';
-                return `
-                <div class="flex justify-between items-center py-2 px-3 bg-slate-900 border-2 border-slate-700 text-xs font-bold my-1">
-                    <span class="text-yellow-400">#${idx + 1} ${escapeHtml(item.name)}</span>
-                    <span class="text-emerald-400">${item.score} PTS <span class="text-[10px] text-slate-400">(${modeText})</span></span>
-                </div>
-            `}).join('') || '<p class="text-xs text-slate-400 font-bold text-center py-2">[ 尚無排行紀錄 ]</p>';
         }
 
         window.toggleAllSeries = function(selectAll) {
@@ -397,7 +360,9 @@
                 window.renderResult();
                 return;
             }
+            // 每當切換新題目時，隨機更換背景圖片
             setRandomBackground();
+            
             gameState.currentQuestion = gameState.questionList[gameState.currentIndex];
             gameState.hintRevealedChars = 0;
             window.renderQuizScreen();
@@ -407,6 +372,17 @@
             setRandomBackground();
             const container = document.getElementById('main-content');
             
+            let lbHtml = gameState.leaderboardData.slice(0, 5).map((item, idx) => {
+                let modeText = '循序';
+                if (item.mode === 'random') modeText = '大亂鬥';
+                else if (item.mode === 'custom') modeText = '自訂';
+                return `
+                <div class="flex justify-between items-center py-2 px-3 bg-slate-900 border-2 border-slate-700 text-xs font-bold my-1">
+                    <span class="text-yellow-400">#${idx + 1} ${escapeHtml(item.name)}</span>
+                    <span class="text-emerald-400">${item.score} PTS <span class="text-[10px] text-slate-400">(${modeText})</span></span>
+                </div>
+            `}).join('') || '<p class="text-xs text-slate-400 font-bold text-center py-2">[ 尚無排行紀錄 ]</p>';
+
             const seriesList = [
                 { id: 'A', name: 'A 確據篇', desc: '得救、禱告蒙允、得勝、赦罪、蒙引導' },
                 { id: 'B', name: 'B 新生命', desc: '基督是中心、神的話、禱告、團契、見證' },
@@ -490,11 +466,11 @@
                     <!-- 排行榜區塊 -->
                     <div class="bg-slate-900/90 border-2 border-slate-700 p-3.5 shadow-md">
                         <h3 class="font-bold text-amber-400 mb-2 flex items-center justify-between text-xs tracking-wider">
-                            <span>🏆 雲端聖殿天梯榜 TOP 5</span>
-                            <span class="text-[10px] text-slate-400 font-pixel">CLOUD SCORES</span>
+                            <span>🏆 聖殿天梯榜 TOP 5</span>
+                            <span class="text-[10px] text-slate-400 font-pixel">HIGH SCORES</span>
                         </h3>
-                        <div id="leaderboard-container" class="space-y-1">
-                            ${renderLeaderboardHtml()}
+                        <div class="space-y-1">
+                            ${lbHtml}
                         </div>
                     </div>
 
@@ -503,9 +479,6 @@
                     </div>
                 </div>
             `;
-
-            // 嘗試載入雲端排行榜
-            window.fetchCloudLeaderboard();
         };
 
         window.renderQuizScreen = function() {
@@ -574,6 +547,7 @@
 
             container.innerHTML = `
                 <div class="space-y-4">
+                    <!-- 頂部戰況資訊欄 -->
                     <div class="flex justify-between items-center text-xs font-bold bg-slate-900 border-2 border-slate-700 p-2.5 gap-2 flex-wrap shadow-md">
                         <div class="flex items-center gap-2">
                             <span class="bg-amber-400 text-slate-900 px-2 py-0.5 font-black">STAGE ${gameState.currentIndex + 1}/${gameState.questionList.length}</span>
@@ -589,16 +563,19 @@
 
                     <div>${displayCardHtml}</div>
 
+                    <!-- 答案輸入區域 -->
                     <div class="bg-slate-900 border-2 border-slate-700 p-3.5 shadow-md">
                         <div class="flex justify-between items-center mb-1">
                             <label class="block text-xs font-bold text-amber-300">${targetLabel}</label>
                             <span class="text-[11px] text-slate-400 font-bold">目標: <span class="text-yellow-400 font-black">${cleanTargetLength}</span> 字</span>
                         </div>
                         
+                        <!-- 像素遮罩提示區 -->
                         <div class="bg-black text-amber-300 p-2.5 border-2 border-slate-800 text-xs font-mono mb-3 tracking-widest break-all select-none min-h-[40px] flex items-center">
                             ${displayedPlaceholder}
                         </div>
 
+                        <!-- 輸入框與字數計算 -->
                         <div class="relative">
                             <input type="text" id="user-answer" oninput="updateCharCountCounter(${cleanTargetLength})" placeholder="在此輸入答案..." 
                                 class="w-full px-3 py-2.5 pixel-input text-sm font-bold pr-20">
@@ -608,6 +585,7 @@
                         </div>
                     </div>
 
+                    <!-- 動作按鈕 -->
                     <div class="flex gap-2 pt-1">
                         <button onclick="useHint()" class="pixel-btn pixel-btn-amber flex-1 py-3 text-xs font-bold">
                             💡 提示 (+字)
@@ -710,15 +688,12 @@
             const total = gameState.questionList.length;
             const percentage = Math.round((gameState.score / total) * 100);
 
-            // 更新本地與上傳至雲端試算表
             gameState.leaderboardData.push({
                 name: gameState.playerName,
                 score: gameState.score,
                 mode: gameState.mode
             });
             gameState.leaderboardData.sort((a, b) => b.score - a.score);
-
-            window.uploadScoreToCloud(gameState.playerName, gameState.score, gameState.mode);
 
             container.innerHTML = `
                 <div class="text-center space-y-5">
@@ -730,7 +705,6 @@
                         <div class="text-xs text-slate-300 font-bold">[ 冒險通關結算 ]</div>
                         <div class="text-3xl font-black text-amber-300">${gameState.score} / ${total}</div>
                         <div class="text-xs font-bold text-slate-200">正確率: <span class="text-emerald-400 font-mono text-base">${percentage}%</span></div>
-                        <div class="text-[11px] text-amber-300 font-medium">✨ 分數已同步至雲端天梯榜！</div>
                     </div>
 
                     <div class="flex gap-3 pt-2">
