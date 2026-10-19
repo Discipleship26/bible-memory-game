@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聖經金句背誦大挑戰 - Pixel Arcade Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #0d0f18;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #f8fafc;
+            position: relative;
+            transition: background-image 0.6s ease-in-out;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(13, 15, 24, 0.45);
+            backdrop-filter: blur(2px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .font-pixel {
+            font-family: 'Press Start 2P', cursive, 'Noto Sans TC', sans-serif;
+        }
+
+        .pixel-card {
+            background-color: rgba(26, 28, 46, 0.92);
+            border: 4px solid #facc15;
+            box-shadow: 
+                -4px 0 0 0 #000,
+                4px 0 0 0 #000,
+                0 -4px 0 0 #000,
+                0 4px 0 0 #000,
+                0 8px 0 0 rgba(0, 0, 0, 0.8),
+                inset -4px -4px 0 0 #0f101d;
+            backdrop-filter: blur(8px);
+        }
+
+        .pixel-btn {
+            position: relative;
+            display: inline-block;
+            text-align: center;
+            text-transform: uppercase;
+            font-weight: bold;
+            border: 3px solid #000;
+            box-shadow: inset -3px -3px 0px 0px rgba(0,0,0,0.4);
+            transition: all 0.1s ease;
+        }
+
+        .pixel-btn:hover {
+            transform: translate(-1px, -2px);
+            box-shadow: inset -3px -3px 0px 0px rgba(0,0,0,0.4), 0 4px 0 0 #000;
+        }
+
+        .pixel-btn:active {
+            transform: translate(1px, 2px);
+            box-shadow: inset 3px 3px 0px 0px rgba(0,0,0,0.4);
+        }
+
+        .pixel-btn-amber {
+            background-color: #f59e0b;
+            color: #1e1b4b;
+            border-color: #fef08a;
+        }
+
+        .pixel-btn-indigo {
+            background-color: #6366f1;
+            color: #ffffff;
+            border-color: #a5b4fc;
+        }
+
+        .pixel-btn-purple {
+            background-color: #a855f7;
+            color: #ffffff;
+            border-color: #e9d5ff;
+        }
+
+        .pixel-btn-emerald {
+            background-color: #10b981;
+            color: #ffffff;
+            border-color: #a7f3d0;
+        }
+
+        .pixel-blink {
+            animation: blinker 1s cubic-bezier(1, 0, 0, 1) infinite;
+        }
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+
+        .pixel-input {
+            background-color: #0f172a;
+            color: #facc15;
+            border: 3px solid #475569;
+            box-shadow: inset 3px 3px 0 0 #000;
+        }
+        .pixel-input:focus {
+            border-color: #facc15;
+            outline: none;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #facc15;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center p-3 md:p-6 relative min-h-screen selection:bg-amber-400 selection:text-slate-900">
+
+    <div id="app" class="w-full max-w-2xl pixel-card rounded-none relative z-10 my-auto p-4 md:p-6">
+        
+        <!-- Pixel Header -->
+        <header class="border-b-4 border-slate-800 pb-5 mb-5 text-center relative bg-slate-900/85 p-4 border-2 border-amber-400/50 shadow-md">
+            <div class="flex items-center justify-center gap-2 mb-2">
+                <span class="text-amber-400 text-lg">✦</span>
+                <span class="font-pixel text-[10px] md:text-xs text-amber-400 tracking-widest uppercase">QUEST OF THE HOLY WORD</span>
+                <span class="text-amber-400 text-lg">✦</span>
+            </div>
+            
+            <h1 class="text-2xl md:text-3xl font-black text-yellow-300 tracking-wider flex items-center justify-center gap-2 drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                <span>⚔️</span> 聖經金句背誦大挑戰 <span>📖</span>
+            </h1>
+            
+            <p class="text-slate-300 text-xs md:text-sm mt-2 font-bold tracking-wide">
+                [ 裝備神的話語 ‧ 抵擋仇敵魔鬼 ]
+            </p>
+        </header>
+
+        <!-- Dynamic Content Container -->
+        <main id="main-content" class="flex-1">
+            <!-- Will be populated by JavaScript -->
+        </main>
+    </div>
+
+    <div id="custom-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50">
+        <div class="bg-slate-900 border-4 border-amber-400 p-6 max-w-sm w-full text-center relative shadow-[8px_8px_0_0_#000]">
+            <div class="text-amber-400 text-2xl mb-2 font-pixel">▲ SYSTEM MESSAGE ▲</div>
+            <h3 id="modal-title" class="text-lg font-bold text-white mb-3 border-b-2 border-slate-700 pb-2">提示</h3>
+            <p id="modal-message" class="text-slate-200 text-sm font-semibold mb-6 whitespace-pre-line leading-relaxed"></p>
+            <button onclick="closeModal()" class="w-full pixel-btn pixel-btn-amber py-2.5 text-sm font-bold">
+                [ 確定 OK ]
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        const backgroundImages = [
+            ['image_582419_9.jpg', 'image_582419_8.jpg', 'image_582419_7.jpg'],
+            ['image_58279b_9.jpg', 'image_58279b_8.jpg', 'image_58279b_7.jpg'],
+            ['image_5827f9_9.jpg', 'image_5827f9_8.jpg', 'image_5827f9_7.jpg'],
+            ['image_582890_9.jpg', 'image_582890_8.jpg', 'image_582890_7.jpg'],
+            ['image_582b59_9.jpg', 'image_582b59_8.jpg', 'image_582b59_7.jpg']
+        ];
+
+        const pixelArtThemes = [
+            `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect width="800" height="600" fill="%230f172a"/><circle cx="400" cy="200" r="180" fill="%2338bdf8" opacity="0.15"/><circle cx="400" cy="200" r="100" fill="%23fef08a" opacity="0.2"/><path d="M0,450 Q200,380 400,450 T800,450 L800,600 L0,600 Z" fill="%231e293b"/></svg>`,
+            `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect width="800" height="600" fill="%23062038"/><path d="M0,0 L800,600 M800,0 L0,600" stroke="%230284c7" stroke-width="2" opacity="0.2"/><circle cx="400" cy="300" r="250" fill="%2338bdf8" opacity="0.1"/><path d="M0,500 L800,400 L800,600 L0,600 Z" fill="%230f172a"/></svg>`
+        ];
+
+        function setRandomBackground() {
+            const randomIndex = Math.floor(Math.random() * backgroundImages.length);
+            const candidates = backgroundImages[randomIndex];
+            
+            function tryLoadImage(index) {
+                if (index >= candidates.length) {
+                    const fallbackSvg = pixelArtThemes[Math.floor(Math.random() * pixelArtThemes.length)];
+                    document.body.style.backgroundImage = `url("${fallbackSvg}")`;
+                    return;
+                }
+                const imgPath = candidates[index];
+                const img = new Image();
+                img.onload = function() {
+                    document.body.style.backgroundImage = `url('${imgPath}')`;
+                };
+                img.onerror = function() {
+                    tryLoadImage(index + 1);
+                };
+                img.src = imgPath;
+            }
+            tryLoadImage(0);
+        }
+
+        let versesData = [
+            { id: "A1", title: "得救的確據", reference: "約翰一書5:11-12", verse: "神賜給我們永生，這永生就在祂兒子裡面。有了神的兒子就有生命；沒有神的兒子就沒有生命。" },
+            { id: "A2", title: "禱告蒙允的確據", reference: "約翰福音16:24", verse: "向來你們沒有奉我的名求什麼，如今你們求，就必得著，叫你們的喜樂可以滿足。" },
+            { id: "A3", title: "得勝的確據", reference: "哥林多前書10:13", verse: "你們所遇見的試探，無非是人所能受的。神是信實的，必不叫你們受試探過於所能受的；在受試探的時候，總要給你們開一條出路，叫你們能忍受得住。" },
+            { id: "A4", title: "赦罪的確據", reference: "約翰一書1:9", verse: "我們若認自己的罪，神是信實的，是公義的，必要赦免我們的罪，洗淨我們一切的不義。" },
+            { id: "A5", title: "蒙引導的確據", reference: "箴言3:5-6", verse: "你要專心仰賴耶和華，不可倚靠自己的聰明，在你一切所行的事上都要認定祂，祂必指引你的路。" },
+            { id: "B1", title: "新生命-基督是中心", reference: "哥林多後書5:17", verse: "若有人在基督裡，他就是新造的人，舊事已過，都變成新的了。" },
+            { id: "B2", title: "新生命-神的話", reference: "馬太福音4:4", verse: "耶穌卻回答說：「經上記著：『人活著，不是單靠食物，乃是靠神口裡所出的一切話。』」" },
+            { id: "B3", title: "新生命-禱告", reference: "約翰福音15:7", verse: "你們若常在我裡面，我的話也常在你們裡面，凡你們所願意的，祈求，就給你們成就。" },
+            { id: "B4", title: "新生命-團契", reference: "馬太福音18:20", verse: "因為無論在哪裡，有兩三個人奉我的名聚會，那裡就有我在他們中間。" },
+            { id: "B5", title: "新生命-見證", reference: "馬可福音16:15", verse: "祂又對他們說：「你們往普天下去，傳福音給萬民聽。」" },
+            { id: "C1", title: "福音_罪", reference: "羅馬書3:23", verse: "因為世人都犯了罪，虧缺了神的榮耀。" },
+            { id: "C2", title: "福音_審判", reference: "羅馬書2:5", verse: "你竟任著你剛硬不悔改的心，為自己積蓄憤怒，直到神震怒的日子，顯祂公義審判的日子。" },
+            { id: "C3", title: "福音_代贖", reference: "羅馬書5:8", verse: "惟有基督在我們還作罪人時候為我們死，神的愛就在此向我們顯明了。" },
+            { id: "C4", title: "福音_恩典", reference: "以弗所書2:8-9", verse: "你們得救是本乎恩，也因著信；這並不是出於自己，乃是神所賜的；也不是出於行為，免得有人自誇。" },
+            { id: "C5", title: "福音_相信", reference: "約翰福音1:12", verse: "凡接待祂的，就是信祂名的人，祂就賜他們權柄，作神的兒女。" },
+            { id: "D1", title: "屬靈氣質_像基督", reference: "哥林多後書3:18", verse: "我們眾人既然敞著臉得以看見主的榮光，就好像從鏡子裡反照，榮上加榮，如同從主的靈變成的。" },
+            { id: "D2", title: "屬靈氣質_聖潔", reference: "帖撒羅尼迦前書4:3", verse: "神的旨意就是要你們成為聖潔，遠避淫行。" },
+            { id: "D3", title: "屬靈氣質_愛", reference: "馬可福音12:30", verse: "你要盡心、盡性、盡意、盡力愛主你的神。" },
+            { id: "D4", title: "屬靈氣質_信心", reference: "羅馬書4:20-21", verse: "並且仰望神的應許，總沒有因不信，心裡起疑惑，反倒因信，心裡得堅固，將榮耀歸給神，且滿心相信神所應許的必能做成。" },
+            { id: "D5", title: "屬靈氣質_謙卑", reference: "腓立比書2:3-4", verse: "凡事不可結黨，不可貪圖虛浮的榮耀；只要存心謙卑，各人看別人比自己強。各人不要單顧自己的事，也要顧別人的事。" },
+            { id: "E1", title: "門徒生活_主權", reference: "羅馬書12:1", verse: "所以，弟兄們，我以神的慈悲勸你們，將身體獻上，當作活祭，是聖潔的，是神所喜悅的；你們如此事奉乃是理所當然的。" },
+            { id: "E2", title: "門徒生活_捨己", reference: "路加福音9:23", verse: "耶穌又對眾人說：「若有人要跟從我，就當捨己，天天背起他的十字架來跟從我。」" },
+            { id: "E3", title: "門徒生活_服侍", reference: "馬可福音10:45", verse: "因為人子來，並不是要受人的服事，乃是要服事人，並且要捨命，作多人的贖價。" },
+            { id: "E4", title: "門徒生活_分享", reference: "路加福音6:38", verse: "你們要給人，就必有給你們的，並且用十足的升斗，連搖帶按，上尖下流地倒在你們懷裡；因為你們用什麼量器量給人，也必用什麼量器量給你們。" },
+            { id: "E5", title: "門徒生活_訓練門徒", reference: "馬太福音28:18-20", verse: "耶穌進前來，對他們說：「天上地下所有的權柄都賜給我了。所以，你們要去，使萬民作我的門徒，奉父,子、聖靈的名給他們施洗。凡我所吩咐你們的，都教訓他們遵守，我就常與你們同在，直到世界的末了。」" },
+            { id: "F1", title: "神的資源_神的同在", reference: "希伯來書13:5b-6", verse: "因為主曾說：「我總不撇下你，也不丟棄你。」所以我們可以放膽說：「主是幫助我的，我必不懼怕，人能把我怎麼樣呢？」" },
+            { id: "F2", title: "神的資源_神的話", reference: "詩篇119:9,11", verse: "少年人用什麼潔淨他的行為呢？是要遵行你的話。我將你的話藏在心裡，免得我得罪你。" },
+            { id: "F3", title: "神的資源_神的平安", reference: "以賽亞書26:3", verse: "堅心倚賴你的，你必保守他十分平安，因為他倚靠你。" },
+            { id: "F4", title: "神的資源_神的力量", reference: "以賽亞書41:10", verse: "你不要害怕，因為我與你同在；不要驚惶，因為我是你的神。我必堅固你，我必幫助你；我必用我公義的右手扶持你。" },
+            { id: "F5", title: "神的資源_神的主權", reference: "羅馬書8:28", verse: "我們曉得萬事都互相效力，叫愛神的人得益處，就是按祂旨意被召的人。" },
+            { id: "G1", title: "男女關係_同是信徒", reference: "哥林多後書6:14", verse: "你們和不信的原不相配，不要同負一軛。義和不義有什麼相交呢？光明和黑暗有什麼相通呢。" },
+            { id: "G2", title: "男女關係_共同人生目標", reference: "阿摩司書3:3", verse: "二人若不同心，豈能同行呢？" },
+            { id: "G3", title: "男女關係_自我控制", reference: "帖撒羅尼迦前書4:3-5", verse: "神的旨意就是要你們成為聖潔，遠避淫行；要你們各人曉得怎樣用聖潔、尊貴守著自己的身體，不放縱私慾的邪情，像那不認識神的外邦人。" },
+            { id: "G4", title: "男女關係_適當時候", reference: "傳道書8:5b-6a", verse: "智慧人的心能辨明時候和判斷。各樣事務成就，都有時候和定理。" },
+            { id: "G5", title: "男女關係_正確優先次序", reference: "馬太福音6:33", verse: "你們要先求祂的國和祂的義，這些東西都要加給你們了。" },
+            { id: "H1", title: "神的屬性_神是信實的", reference: "民數記23:19", verse: "神非人，必不致說謊；也非人子，必不致後悔。祂說話豈不照著行呢？祂發言豈不要成就呢？" },
+            { id: "H2", title: "神的屬性_神是全知的", reference: "歷代志上28:9", verse: "我兒所羅門哪，你當認識耶和華你父的神，誠心樂意地事奉祂；因為祂鑒察眾人的心，知道一切心思意念。你若尋求祂，祂必使你尋見；你若離棄祂，祂必永遠丟棄你。" },
+            { id: "H3", title: "神的屬性_神是榮耀的", reference: "歷代志上29:11", verse: "耶和華啊，尊大、能力、榮耀、強勝、威嚴都是你的；凡天上地下的都是你的；國度也是你的，並且你為至高，為萬有之首。" },
+            { id: "H4", title: "神的屬性_神是審判者", reference: "傳道書12:14", verse: "因為人所做的事，連一切隱藏的事，無論是善是惡，神都必審問。" },
+            { id: "H5", title: "神的屬性_神是靈", reference: "約翰福音4:24", verse: "神是個靈，所以拜祂的，必須用心靈和誠實拜祂。" }
+        ];
+
+        let gameState = {
+            playerName: "",
+            mode: "sequential",
+            customOrder: 'sequential',
+            selectedSeries: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
+            currentIndex: 0,
+            questionList: [],
+            score: 0,
+            hintsLeft: 5,
+            currentQuestion: null,
+            hintRevealedChars: 0,
+            leaderboardData: [
+                { name: "保羅 Paul", score: 40, mode: "sequential" },
+                { name: "彼得 Peter", score: 38, mode: "random" },
+                { name: "提摩太 Timothy", score: 35, mode: "custom" }
+            ],
+            isLoadingLeaderboard: false
+        };
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        window.showModal = function(title, message) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = message;
+            document.getElementById('custom-modal').classList.remove('hidden');
+            document.getElementById('custom-modal').classList.add('flex');
+        };
+
+        window.closeModal = function() {
+            document.getElementById('custom-modal').classList.remove('flex');
+            document.getElementById('custom-modal').classList.add('hidden');
+        };
+
+        function defaultCloseModal() {
+            document.getElementById('custom-modal').classList.remove('flex');
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
+
+        // 從 Google Apps Script 獲取雲端排行榜
+        window.fetchCloudLeaderboard = function() {
+            if (typeof google === 'undefined' || !google.script || !google.script.run) {
+                return; // 若非GAS內嵌環境則維持本地預設
+            }
+            gameState.isLoadingLeaderboard = true;
+            google.script.run
+                .withSuccessHandler(function(data) {
+                    if (data && Array.isArray(data) && data.length > 0) {
+                        gameState.leaderboardData = data;
+                    }
+                    gameState.isLoadingLeaderboard = false;
+                    const lbContainer = document.getElementById('leaderboard-container');
+                    if (lbContainer) {
+                        lbContainer.innerHTML = renderLeaderboardHtml();
+                    }
+                })
+                .withFailureHandler(function(err) {
+                    gameState.isLoadingLeaderboard = false;
+                    console.error("無法載入雲端排行榜: ", err);
+                })
+                .getLeaderboard();
+        };
+
+        // 上傳分數至 Google 試算表
+        window.uploadScoreToCloud = function(name, score, mode) {
+            if (typeof google === 'undefined' || !google.script || !google.script.run) {
+                return;
+            }
+            google.script.run
+                .withSuccessHandler(function(res) {
+                    console.log(res.message);
+                })
+                .withFailureHandler(function(err) {
+                    console.error("上傳分數失敗: ", err);
+                })
+                .saveScoreToSheet(name, score, mode);
+        };
+
+        function renderLeaderboardHtml() {
+            if (gameState.isLoadingLeaderboard) {
+                return '<p class="text-xs text-amber-300 font-bold text-center py-2 pixel-blink">[ 正在從雲端載入天梯榜... ]</p>';
+            }
+            return gameState.leaderboardData.slice(0, 5).map((item, idx) => {
+                let modeText = '循序';
+                if (item.mode === 'random') modeText = '大亂鬥';
+                else if (item.mode === 'custom') modeText = '自訂';
+                return `
+                <div class="flex justify-between items-center py-2 px-3 bg-slate-900 border-2 border-slate-700 text-xs font-bold my-1">
+                    <span class="text-yellow-400">#${idx + 1} ${escapeHtml(item.name)}</span>
+                    <span class="text-emerald-400">${item.score} PTS <span class="text-[10px] text-slate-400">(${modeText})</span></span>
+                </div>
+            `}).join('') || '<p class="text-xs text-slate-400 font-bold text-center py-2">[ 尚無排行紀錄 ]</p>';
+        }
+
+        window.toggleAllSeries = function(selectAll) {
+            const checkboxes = document.querySelectorAll('.series-checkbox');
+            checkboxes.forEach(cb => cb.checked = selectAll);
+            if (selectAll) {
+                gameState.selectedSeries = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+            } else {
+                gameState.selectedSeries = [];
+            }
+        };
+
+        window.startGame = function(mode) {
+            const nameInput = document.getElementById('player-name-input');
+            const name = nameInput ? nameInput.value.trim() : '';
+            gameState.playerName = name || '聖殿勇者';
+            gameState.mode = mode;
+            gameState.score = 0;
+            gameState.currentIndex = 0;
+
+            if (mode === 'sequential') {
+                gameState.questionList = [...versesData];
+            } else if (mode === 'random') {
+                gameState.questionList = [...versesData].sort(() => Math.random() - 0.5);
+            } else if (mode === 'custom') {
+                const checkedBoxes = document.querySelectorAll('.series-checkbox:checked');
+                const selectedSeries = Array.from(checkedBoxes).map(cb => cb.value);
+                if (selectedSeries.length === 0) {
+                    window.showModal("提示", "請至少勾選一個冒險主題！");
+                    return;
+                }
+                gameState.selectedSeries = selectedSeries;
+                let filtered = versesData.filter(v => selectedSeries.includes(v.id.charAt(0)));
+                
+                const customOrderEl = document.querySelector('input[name="custom-order"]:checked');
+                const order = customOrderEl ? customOrderEl.value : 'sequential';
+                if (order === 'random') {
+                    filtered.sort(() => Math.random() - 0.5);
+                }
+                gameState.questionList = filtered;
+            }
+
+            if (gameState.questionList.length === 0) {
+                window.showModal("提示", "沒有找到可進行挑戰的聖經經文！");
+                return;
+            }
+
+            gameState.hintsLeft = Math.max(2, Math.ceil(gameState.questionList.length / 5) * 2);
+            window.loadQuestion();
+        };
+
+        window.loadQuestion = function() {
+            if (gameState.currentIndex >= gameState.questionList.length) {
+                window.renderResult();
+                return;
+            }
+            setRandomBackground();
+            gameState.currentQuestion = gameState.questionList[gameState.currentIndex];
+            gameState.hintRevealedChars = 0;
+            window.renderQuizScreen();
+        };
+
+        window.renderHome = function() {
+            setRandomBackground();
+            const container = document.getElementById('main-content');
+            
+            const seriesList = [
+                { id: 'A', name: 'A 確據篇', desc: '得救、禱告蒙允、得勝、赦罪、蒙引導' },
+                { id: 'B', name: 'B 新生命', desc: '基督是中心、神的話、禱告、團契、見證' },
+                { id: 'C', name: 'C 福音篇', desc: '罪、審判、代贖、恩典、相信' },
+                { id: 'D', name: 'D 屬靈氣質', desc: '像基督、聖潔、愛、信心、謙卑' },
+                { id: 'E', name: 'E 門徒生活', desc: '主權、捨己、服侍、分享、訓練門徒' },
+                { id: 'F', name: 'F 神的資源', desc: '同在、神的話、平安、力量、主權' },
+                { id: 'G', name: 'G 男女關係', desc: '同是信徒、共同目標、自控、適當時候' },
+                { id: 'H', name: 'H 神的屬性', desc: '信實、全知、榮耀、神是靈' }
+            ];
+
+            const seriesCheckboxesHtml = seriesList.map(s => `
+                <label class="flex items-start gap-2.5 p-2 bg-slate-900 border-2 border-slate-700 hover:border-amber-400 cursor-pointer transition select-none">
+                    <input type="checkbox" value="${s.id}" class="series-checkbox mt-1 accent-amber-400" ${gameState.selectedSeries.includes(s.id) ? 'checked' : ''}>
+                    <div class="text-xs">
+                        <div class="font-bold text-amber-300">${s.name}</div>
+                        <div class="text-slate-400 font-medium text-[11px] leading-tight">${s.desc}</div>
+                    </div>
+                </label>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="space-y-5">
+                    <!-- 玩家姓名輸入 -->
+                    <div class="bg-slate-900/90 p-3.5 border-2 border-slate-700 shadow-md">
+                        <label class="block text-xs font-bold text-amber-400 mb-2 flex items-center gap-1 uppercase tracking-wider">
+                            <span>🎮</span> 勇者暱稱 (PLAYER NAME)
+                        </label>
+                        <input type="text" id="player-name-input" value="${escapeHtml(gameState.playerName)}" placeholder="請輸入名字..." 
+                            class="w-full px-3 py-2.5 pixel-input text-sm font-bold tracking-wide">
+                    </div>
+
+                    <!-- 主遊戲模式選擇 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <button onclick="startGame('sequential')" class="pixel-btn pixel-btn-indigo p-4 text-left w-full">
+                            <div class="text-sm font-black text-yellow-300 flex items-center gap-1">
+                                <span>⚔️</span> 全範圍 循序漸進關卡
+                            </div>
+                            <p class="text-[11px] text-indigo-100 font-medium mt-1">經文依序出現 (A1 ~ H5 共 40 首)</p>
+                        </button>
+                        <button onclick="startGame('random')" class="pixel-btn pixel-btn-purple p-4 text-left w-full">
+                            <div class="text-sm font-black text-yellow-300 flex items-center gap-1">
+                                <span>⚡</span> 全範圍 大亂鬥挑戰
+                            </div>
+                            <p class="text-[11px] text-purple-100 font-medium mt-1">全題庫隨機抽題，考驗極限記憶力</p>
+                        </button>
+                    </div>
+
+                    <!-- 自訂關卡地圖 -->
+                    <div class="bg-slate-900/90 border-2 border-slate-700 p-3.5 space-y-3 shadow-md">
+                        <div class="flex items-center justify-between border-b-2 border-slate-800 pb-2">
+                            <div class="text-xs font-bold text-amber-400 flex items-center gap-1">
+                                <span>🗺️</span> 冒險關卡範圍自訂
+                            </div>
+                            <div class="flex items-center gap-2 text-xs font-bold">
+                                <button onclick="toggleAllSeries(true)" class="text-emerald-400 hover:underline">[ 全選 ]</button>
+                                <button onclick="toggleAllSeries(false)" class="text-rose-400 hover:underline">[ 清空 ]</button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
+                            ${seriesCheckboxesHtml}
+                        </div>
+
+                        <div class="flex items-center justify-between pt-2 border-t-2 border-slate-800 gap-2 flex-wrap">
+                            <div class="flex items-center gap-3 text-xs font-bold text-slate-300">
+                                <span>順序：</span>
+                                <label class="inline-flex items-center gap-1 cursor-pointer text-amber-300">
+                                    <input type="radio" name="custom-order" value="sequential" checked class="accent-amber-400"> 依序
+                                </label>
+                                <label class="inline-flex items-center gap-1 cursor-pointer text-amber-300">
+                                    <input type="radio" name="custom-order" value="random" class="accent-amber-400"> 隨機
+                                </label>
+                            </div>
+                            <button onclick="startGame('custom')" class="pixel-btn pixel-btn-emerald px-4 py-2 text-xs font-bold">
+                                開始自訂關卡 🚀
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 排行榜區塊 -->
+                    <div class="bg-slate-900/90 border-2 border-slate-700 p-3.5 shadow-md">
+                        <h3 class="font-bold text-amber-400 mb-2 flex items-center justify-between text-xs tracking-wider">
+                            <span>🏆 雲端聖殿天梯榜 TOP 5</span>
+                            <span class="text-[10px] text-slate-400 font-pixel">CLOUD SCORES</span>
+                        </h3>
+                        <div id="leaderboard-container" class="space-y-1">
+                            ${renderLeaderboardHtml()}
+                        </div>
+                    </div>
+
+                    <div class="text-center font-pixel text-[10px] text-slate-400 tracking-widest pixel-blink drop-shadow">
+                        - PRESS BUTTON TO START -
+                    </div>
+                </div>
+            `;
+
+            // 嘗試載入雲端排行榜
+            window.fetchCloudLeaderboard();
+        };
+
+        window.renderQuizScreen = function() {
+            const q = gameState.currentQuestion;
+            const container = document.getElementById('main-content');
+            
+            if (q.displayType === undefined) {
+                q.displayType = Math.floor(Math.random() * 3);
+            }
+
+            let displayCardHtml = '';
+            let targetLabel = '';
+            let rawTargetString = '';
+
+            if (q.displayType === 0) {
+                displayCardHtml = `
+                    <div class="bg-slate-900 border-2 border-slate-700 p-3 mb-2">
+                        <div class="text-[11px] text-amber-400 font-bold mb-0.5">【 主題 】</div>
+                        <div class="text-base font-black text-white">${escapeHtml(q.title)}</div>
+                    </div>
+                    <div class="bg-slate-900 border-2 border-slate-700 p-3 mb-2">
+                        <div class="text-[11px] text-amber-400 font-bold mb-0.5">【 經文出處 】</div>
+                        <div class="text-base font-black text-white">${escapeHtml(q.reference)}</div>
+                    </div>
+                `;
+                targetLabel = "請默寫完整經文內容：";
+                rawTargetString = q.verse;
+            } else if (q.displayType === 1) {
+                displayCardHtml = `
+                    <div class="bg-slate-900 border-2 border-slate-700 p-3 mb-2">
+                        <div class="text-[11px] text-amber-400 font-bold mb-0.5">【 主題 】</div>
+                        <div class="text-base font-black text-white">${escapeHtml(q.title)}</div>
+                    </div>
+                    <div class="bg-slate-900 border-2 border-slate-700 p-3 mb-2">
+                        <div class="text-[11px] text-amber-400 font-bold mb-0.5">【 經文內容 】</div>
+                        <div class="text-sm text-slate-100 font-bold leading-relaxed">${escapeHtml(q.verse)}</div>
+                    </div>
+                `;
+                targetLabel = "請填寫經文出處：";
+                rawTargetString = q.reference;
+            } else {
+                displayCardHtml = `
+                    <div class="bg-slate-900 border-2 border-slate-700 p-3 mb-2">
+                        <div class="text-[11px] text-amber-400 font-bold mb-0.5">【 經文內容 】</div>
+                        <div class="text-sm text-slate-100 font-bold leading-relaxed">${escapeHtml(q.verse)}</div>
+                    </div>
+                    <div class="bg-slate-900 border-2 border-slate-700 p-3 mb-2">
+                        <div class="text-[11px] text-amber-400 font-bold mb-0.5">【 經文出處 】</div>
+                        <div class="text-base font-black text-white">${escapeHtml(q.reference)}</div>
+                    </div>
+                `;
+                targetLabel = "請填寫主題名稱：";
+                rawTargetString = q.title;
+            }
+
+            const cleanTargetLength = rawTargetString.replace(/[\s\。\，\:\-\；\！\？\、「」『』]/g, '').length;
+
+            let displayedPlaceholder = "";
+            for (let i = 0; i < rawTargetString.length; i++) {
+                if (i < gameState.hintRevealedChars) {
+                    displayedPlaceholder += rawTargetString[i];
+                } else {
+                    displayedPlaceholder += "_ ";
+                }
+            }
+
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center text-xs font-bold bg-slate-900 border-2 border-slate-700 p-2.5 gap-2 flex-wrap shadow-md">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-amber-400 text-slate-900 px-2 py-0.5 font-black">STAGE ${gameState.currentIndex + 1}/${gameState.questionList.length}</span>
+                            <button onclick="confirmRestart()" class="text-slate-300 hover:text-white underline">
+                                [ 退出 ]
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-2 font-mono">
+                            <span class="text-amber-300">💡 HINT: ${gameState.hintsLeft}</span>
+                            <span class="text-emerald-400">SCORE: ${gameState.score}</span>
+                        </div>
+                    </div>
+
+                    <div>${displayCardHtml}</div>
+
+                    <div class="bg-slate-900 border-2 border-slate-700 p-3.5 shadow-md">
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs font-bold text-amber-300">${targetLabel}</label>
+                            <span class="text-[11px] text-slate-400 font-bold">目標: <span class="text-yellow-400 font-black">${cleanTargetLength}</span> 字</span>
+                        </div>
+                        
+                        <div class="bg-black text-amber-300 p-2.5 border-2 border-slate-800 text-xs font-mono mb-3 tracking-widest break-all select-none min-h-[40px] flex items-center">
+                            ${displayedPlaceholder}
+                        </div>
+
+                        <div class="relative">
+                            <input type="text" id="user-answer" oninput="updateCharCountCounter(${cleanTargetLength})" placeholder="在此輸入答案..." 
+                                class="w-full px-3 py-2.5 pixel-input text-sm font-bold pr-20">
+                            <div id="char-counter" class="absolute right-2 bottom-2.5 text-[11px] font-bold text-slate-400 pointer-events-none">
+                                還差 ${cleanTargetLength} 字
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 pt-1">
+                        <button onclick="useHint()" class="pixel-btn pixel-btn-amber flex-1 py-3 text-xs font-bold">
+                            💡 提示 (+字)
+                        </button>
+                        <button onclick="submitAnswer()" class="pixel-btn pixel-btn-indigo flex-[2] py-3 text-xs font-bold">
+                            ⚔️ 提交答案 (SUBMIT)
+                        </button>
+                    </div>
+                </div>
+            `;
+            setTimeout(() => {
+                const inp = document.getElementById('user-answer');
+                if (inp) inp.focus();
+            }, 100);
+        };
+
+        window.confirmRestart = function() {
+            window.showModal("放棄挑戰", "確定要放棄當前的關卡進度並返回主頁嗎？");
+            window.closeModal = function() {
+                document.getElementById('custom-modal').classList.remove('flex');
+                document.getElementById('custom-modal').classList.add('hidden');
+                window.closeModal = defaultCloseModal;
+                window.renderHome();
+            };
+        };
+
+        window.useHint = function() {
+            const q = gameState.currentQuestion;
+            let targetString = q.displayType === 0 ? q.verse : (q.displayType === 1 ? q.reference : q.title);
+            
+            if (gameState.hintsLeft <= 0) {
+                window.showModal("提示用盡", "你的提示道具已經用完囉！");
+                return;
+            }
+            if (gameState.hintRevealedChars >= targetString.length) {
+                window.showModal("提示", "已經揭曉所有字元了！");
+                return;
+            }
+
+            gameState.hintsLeft--;
+            gameState.hintRevealedChars += Math.min(3, targetString.length - gameState.hintRevealedChars);
+            window.renderQuizScreen();
+        };
+
+        window.updateCharCountCounter = function(targetLength) {
+            const inputVal = document.getElementById('user-answer').value;
+            const counterEl = document.getElementById('char-counter');
+            if (!counterEl) return;
+
+            const cleanInputLength = inputVal.replace(/[\s\。\，\:\-\；\！\？\、「」『』]/g, '').length;
+            const remaining = targetLength - cleanInputLength;
+
+            if (remaining > 0) {
+                counterEl.innerText = `還差 ${remaining} 字`;
+                counterEl.className = "absolute right-2 bottom-2.5 text-[11px] font-bold text-slate-400 pointer-events-none";
+            } else if (remaining === 0) {
+                counterEl.innerText = `字數符合！`;
+                counterEl.className = "absolute right-2 bottom-2.5 text-[11px] font-bold text-emerald-400 pointer-events-none";
+            } else {
+                counterEl.innerText = `多 ${Math.abs(remaining)} 字`;
+                counterEl.className = "absolute right-2 bottom-2.5 text-[11px] font-bold text-amber-400 pointer-events-none";
+            }
+        };
+
+        window.submitAnswer = function() {
+            const answerInput = document.getElementById('user-answer');
+            if (!answerInput) return;
+            
+            const userAns = answerInput.value.trim();
+            const q = gameState.currentQuestion;
+            let targetString = q.displayType === 0 ? q.verse : (q.displayType === 1 ? q.reference : q.title);
+
+            if (!userAns) {
+                window.showModal("提示", "請先輸入您的答案！");
+                return;
+            }
+
+            const cleanUser = userAns.replace(/[\s\。\，\:\-\；\！\？\、「」『』]/g, '').toLowerCase();
+            const cleanTarget = targetString.replace(/[\s\。\，\:\-\；\！\ ?\、「」『』]/g, '').toLowerCase();
+
+            if (cleanUser === cleanTarget) {
+                gameState.score += 1;
+                window.showModal("🎉 答對了！GREAT!", `太棒了！完全正確！\n\n【出處】${q.reference}\n【內容】${q.verse}`);
+            } else {
+                window.showModal("❌ 答錯了！MISS!", `可惜不完全正確！\n\n標準答案：\n${targetString}\n\n【經文完整資訊】\n${q.title} (${q.reference})\n${q.verse}`);
+            }
+
+            window.closeModal = function() {
+                document.getElementById('custom-modal').classList.remove('flex');
+                document.getElementById('custom-modal').classList.add('hidden');
+                window.closeModal = defaultCloseModal;
+                gameState.currentIndex++;
+                window.loadQuestion();
+            };
+        };
+
+        window.renderResult = function() {
+            setRandomBackground();
+            const container = document.getElementById('main-content');
+            const total = gameState.questionList.length;
+            const percentage = Math.round((gameState.score / total) * 100);
+
+            // 更新本地與上傳至雲端試算表
+            gameState.leaderboardData.push({
+                name: gameState.playerName,
+                score: gameState.score,
+                mode: gameState.mode
+            });
+            gameState.leaderboardData.sort((a, b) => b.score - a.score);
+
+            window.uploadScoreToCloud(gameState.playerName, gameState.score, gameState.mode);
+
+            container.innerHTML = `
+                <div class="text-center space-y-5">
+                    <div class="font-pixel text-yellow-300 text-lg md:text-xl tracking-widest animate-bounce">
+                        ★ MISSION COMPLETE ★
+                    </div>
+
+                    <div class="bg-slate-900 border-4 border-amber-400 p-5 space-y-3">
+                        <div class="text-xs text-slate-300 font-bold">[ 冒險通關結算 ]</div>
+                        <div class="text-3xl font-black text-amber-300">${gameState.score} / ${total}</div>
+                        <div class="text-xs font-bold text-slate-200">正確率: <span class="text-emerald-400 font-mono text-base">${percentage}%</span></div>
+                        <div class="text-[11px] text-amber-300 font-medium">✨ 分數已同步至雲端天梯榜！</div>
+                    </div>
+
+                    <div class="flex gap-3 pt-2">
+                        <button onclick="renderHome()" class="pixel-btn pixel-btn-amber flex-1 py-3 text-xs font-bold">
+                            🏠 返回大廳 (HOME)
+                        </button>
+                        <button onclick="startGame(gameState.mode)" class="pixel-btn pixel-btn-emerald flex-1 py-3 text-xs font-bold">
+                            🔄 再次挑戰 (RETRY)
+                        </button>
+                    </div>
+                </div>
+            `;
+        };
+
+        window.onload = function() {
+            setRandomBackground();
+            window.renderHome();
+        };
+    </script>
+</body>
+</html>
